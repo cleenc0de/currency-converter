@@ -1,3 +1,4 @@
+import 'package:currency_converter/country_from_location.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -9,10 +10,15 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Text('Hello World!'),
+          child: FutureBuilder(
+            future: getCountryFromLocation(),
+            builder: (context, snapshot) {
+              return snapshot.hasData?Text(snapshot.data.toString()):Text("Country not found");
+            },
+          )
         ),
       ),
     );
