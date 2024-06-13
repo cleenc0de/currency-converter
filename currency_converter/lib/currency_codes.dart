@@ -217,7 +217,7 @@ const Map<String, String> countryCurrencyCodes = {
   "Ukraine": "UAH",
   "United Arab Emirates": "AED",
   "United Kingdom": "GBP",
-  "United States": "USD",
+  "US": "USD",
   "Uruguay": "UYU",
   "Uzbekistan": "UZS",
   "Vanuatu": "VUV",
