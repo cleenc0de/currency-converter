@@ -1,11 +1,8 @@
-import 'dart:developer';
-
 import 'package:currency_converter/currency_codes.dart';
 import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../services/currency_rate_api.dart';
-
+import '../services/currency_rate_api.dart';
 
 //TODO: Add DropDown current location
 void main() {
@@ -31,11 +28,12 @@ class CurrencyConverter extends StatefulWidget {
 }
 
 class CurrencyConverterState extends State<CurrencyConverter> {
-  String _selectedCurrencyFrom = getCurrencyCode(WidgetsBinding.instance.platformDispatcher.locale.countryCode.toString()); // current smartphone setting
+  String _selectedCurrencyFrom = getCurrencyCode(WidgetsBinding
+      .instance.platformDispatcher.locale.countryCode
+      .toString()); // current smartphone setting
   String _selectedCurrencyTo = 'EUR'; // TODO: current location
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
-
 
   @override
   void initState() {
@@ -48,7 +46,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   void _onFromChanged() async {
     if (_fromController.text.isEmpty) return;
     double fromValue = double.parse(_fromController.text);
-    double rate = await getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
+    double rate =
+        await getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
     double toValue = fromValue * rate;
     _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
   }
@@ -56,7 +55,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   void _onToChanged() async {
     if (_toController.text.isEmpty) return;
     double toValue = double.parse(_toController.text);
-    double rate = await getExchangeRate(_selectedCurrencyTo, _selectedCurrencyFrom);
+    double rate =
+        await getExchangeRate(_selectedCurrencyTo, _selectedCurrencyFrom);
     double fromValue = toValue * rate;
     //_fromController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
   }
@@ -84,7 +84,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "1 $_selectedCurrencyFrom corresponds", //TODO: don't hardcode exchange rate
+              "1 $_selectedCurrencyFrom corresponds",
+              //TODO: don't hardcode exchange rate
               style: const TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 18),
@@ -103,7 +104,9 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                     ),
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.right,
-                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?'))],
+                    inputFormatters: <TextInputFormatter>[
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?'))
+                    ],
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -150,7 +153,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 ),
               ],
             ),
-             const Align(
+            const Align(
               alignment: Alignment.bottomRight,
               child: Text(
                 "your current location",
