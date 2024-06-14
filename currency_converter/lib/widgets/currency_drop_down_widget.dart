@@ -7,7 +7,7 @@ class CurrencyDropDownWidget extends StatefulWidget {
   const CurrencyDropDownWidget({
     super.key,
     required this.onChanged,
-    this.initialValue = 'USD',
+    required this.initialValue,
   });
 
   @override
@@ -23,6 +23,17 @@ class CurrencyDropDownWidgetState extends State<CurrencyDropDownWidget> {
     super.initState();
     _selectedCurrency = widget.initialValue;
   }
+
+  @override
+  void didUpdateWidget(CurrencyDropDownWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.initialValue != oldWidget.initialValue) {
+      setState(() {
+        _selectedCurrency = widget.initialValue;
+      });
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {

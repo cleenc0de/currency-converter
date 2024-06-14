@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:currency_converter/currency_codes.dart';
 import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../services/country_from_location.dart';
 import '../services/currency_rate_api.dart';
 
 //TODO: Add DropDown current location
@@ -31,23 +34,35 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   String _selectedCurrencyFrom = getCurrencyCode(WidgetsBinding
       .instance.platformDispatcher.locale.countryCode
       .toString()); // current smartphone setting
-  String _selectedCurrencyTo = 'EUR'; // TODO: current location
+  String _selectedCurrencyTo = "CNY";
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
+  final CurrencyRateApi _currencyRateApi = CurrencyRateApi(); // Instance der API
 
   @override
   void initState() {
     super.initState();
-    // TODO: _selectedCurrencyTo = getCurrencyCode(getCurrentLocation());
+    _initializeCurrencyTo();
     _fromController.addListener(_onFromChanged);
     _toController.addListener(_onToChanged);
+  }
+
+  Future<void> _initializeCurrencyTo() async {
+    String countryCode = await getCountryFromLocation();
+    log("getCountryFromLocation: $countryCode");
+    setState(() {
+      _selectedCurrencyTo = getCurrencyCode(countryCode);
+    });
+
+    log("_selectedCurrencyTo: $_selectedCurrencyTo");
+    log("_selectedCurrencyFrom: $_selectedCurrencyFrom");
   }
 
   void _onFromChanged() async {
     if (_fromController.text.isEmpty) return;
     double fromValue = double.parse(_fromController.text);
     double rate =
-        await getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
+        await _currencyRateApi.getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
     double toValue = fromValue * rate;
     _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
   }
@@ -56,7 +71,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     if (_toController.text.isEmpty) return;
     double toValue = double.parse(_toController.text);
     double rate =
-        await getExchangeRate(_selectedCurrencyTo, _selectedCurrencyFrom);
+        await _currencyRateApi.getExchangeRate(_selectedCurrencyTo, _selectedCurrencyFrom);
     double fromValue = toValue * rate;
     //_fromController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
   }
