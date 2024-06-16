@@ -23,7 +23,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   final TextEditingController _toController = TextEditingController();
   final CurrencyRateApi _currencyRateApi = CurrencyRateApi(); // Instance der API
   bool _isConverting = false;
-  bool _isLoading = false;
+  bool _isLoading = false; // TODO: wait until current location is loading
 
   @override
   void initState() {
@@ -152,14 +152,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 ),
               ],
             ),
-            const Align(
-              alignment: Alignment.bottomRight,
-              child: Text(
-                "your smartphone language settings",
-                style: TextStyle(fontSize: 18),
-              ),
-            ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 25),
             Row(
               children: [
                 Expanded(
