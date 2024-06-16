@@ -7,21 +7,6 @@ import 'package:flutter/services.dart';
 import '../services/country_from_location.dart';
 import '../services/currency_rate_api.dart';
 
-void main() {
-  runApp(const MainApp());
-}
-
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: CurrencyConverter(),
-    );
-  }
-}
-
 class CurrencyConverter extends StatefulWidget {
   const CurrencyConverter({super.key});
 
@@ -83,6 +68,23 @@ class CurrencyConverterState extends State<CurrencyConverter> {
       _fromController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
     } catch (e) {
       log('Error in _onToChanged: $e');
+    } finally {
+      _isConverting = false;
+      _isLoading = false;
+    }
+  }
+
+  void _onChanged() async{
+    if (_isConverting || _fromController.text.isEmpty) return;
+    _isLoading = true;
+    _isConverting = true;
+    try {
+      double fromValue = double.parse(_fromController.text);
+      double rate = await _currencyRateApi.getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
+      double toValue = fromValue * rate;
+      _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
+    } catch (e) {
+      log('Error in _onFromChanged: $e');
     } finally {
       _isConverting = false;
       _isLoading = false;
@@ -175,7 +177,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                   onChanged: (value) {
                     setState(() {
                       _selectedCurrencyTo = value!;
-                      _onToChanged();
+                      _onChanged();
                     });
                   },
                   initialValue: _selectedCurrencyTo,
