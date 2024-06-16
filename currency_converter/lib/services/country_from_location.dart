@@ -1,12 +1,9 @@
-import 'dart:developer';
-
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 
 Future<String> getCountryFromLocation() async {
   Position position = await _determinePosition();
   List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
-  log("placemark: ${placemarks.first.isoCountryCode}");
   return placemarks.first.isoCountryCode ?? "US";
 }
 

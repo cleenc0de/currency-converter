@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import '../services/country_from_location.dart';
 import '../services/currency_rate_api.dart';
 
-//TODO: Add DropDown current location
 void main() {
   runApp(const MainApp());
 }
@@ -34,10 +33,12 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   String _selectedCurrencyFrom = getCurrencyCode(WidgetsBinding
       .instance.platformDispatcher.locale.countryCode
       .toString()); // current smartphone setting
-  String _selectedCurrencyTo = "CNY";
+  String _selectedCurrencyTo = "EUR";
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final CurrencyRateApi _currencyRateApi = CurrencyRateApi(); // Instance der API
+  bool _isConverting = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -49,31 +50,43 @@ class CurrencyConverterState extends State<CurrencyConverter> {
 
   Future<void> _initializeCurrencyTo() async {
     String countryCode = await getCountryFromLocation();
-    log("getCountryFromLocation: $countryCode");
     setState(() {
       _selectedCurrencyTo = getCurrencyCode(countryCode);
     });
-
-    log("_selectedCurrencyTo: $_selectedCurrencyTo");
-    log("_selectedCurrencyFrom: $_selectedCurrencyFrom");
   }
 
   void _onFromChanged() async {
-    if (_fromController.text.isEmpty) return;
-    double fromValue = double.parse(_fromController.text);
-    double rate =
-        await _currencyRateApi.getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
-    double toValue = fromValue * rate;
-    _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
+    if (_isConverting || _fromController.text.isEmpty) return;
+    _isLoading = true;
+    _isConverting = true;
+    try {
+      double fromValue = double.parse(_fromController.text);
+      double rate = await _currencyRateApi.getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
+      double toValue = fromValue * rate;
+      _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
+    } catch (e) {
+      log('Error in _onFromChanged: $e');
+    } finally {
+      _isConverting = false;
+      _isLoading = false;
+    }
   }
 
   void _onToChanged() async {
-    if (_toController.text.isEmpty) return;
-    double toValue = double.parse(_toController.text);
-    double rate =
-        await _currencyRateApi.getExchangeRate(_selectedCurrencyTo, _selectedCurrencyFrom);
-    double fromValue = toValue * rate;
-    //_fromController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
+    if (_isConverting || _toController.text.isEmpty) return;
+    _isLoading = true;
+    _isConverting = true;
+    try {
+      double toValue = double.parse(_toController.text);
+      double rate = await _currencyRateApi.getExchangeRate(_selectedCurrencyTo, _selectedCurrencyFrom);
+      double fromValue = toValue * rate;
+      _fromController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
+    } catch (e) {
+      log('Error in _onToChanged: $e');
+    } finally {
+      _isConverting = false;
+      _isLoading = false;
+    }
   }
 
   @override
@@ -133,6 +146,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                     });
                   },
                   initialValue: _selectedCurrencyFrom,
+                  disabledValue: _selectedCurrencyTo,
                 ),
               ],
             ),
@@ -165,6 +179,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                     });
                   },
                   initialValue: _selectedCurrencyTo,
+                  disabledValue: _selectedCurrencyFrom,
                 ),
               ],
             ),

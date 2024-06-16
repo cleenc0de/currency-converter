@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CurrencyDropDownWidget extends StatefulWidget {
   final ValueChanged<String?> onChanged;
   final String initialValue;
+  final String disabledValue;
 
   const CurrencyDropDownWidget({
     super.key,
     required this.onChanged,
     required this.initialValue,
+    required this.disabledValue,
   });
 
   @override
@@ -49,6 +51,7 @@ class CurrencyDropDownWidgetState extends State<CurrencyDropDownWidget> {
         return DropdownMenuEntry<String>(
           value: value,
           label: value,
+          enabled: value != widget.disabledValue,
         );
       }).toList(),
     );
