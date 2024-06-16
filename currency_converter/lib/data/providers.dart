@@ -1,0 +1,32 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class DarkModeEnabledProvider extends ChangeNotifier {
+  late bool darkModeEnabled;
+
+  DarkModeEnabledProvider(bool isDarkMode) {
+    darkModeEnabled = isDarkMode;
+  }
+
+  void switchDarkModeEnabled() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    darkModeEnabled = !darkModeEnabled;
+    prefs.setBool('darkModeEnabled',  darkModeEnabled);
+    notifyListeners();
+  }
+}
+
+class FavoriteCurrencyProvider extends ChangeNotifier {
+  late String favoriteCurrency;
+
+  FavoriteCurrencyProvider(String currency) {
+    favoriteCurrency = currency;
+  }
+
+  void setFavoriteCurrency(String currency) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    favoriteCurrency = currency;
+    prefs.setString('favoriteCurrency', favoriteCurrency);
+    notifyListeners();
+  }
+}

@@ -1,23 +1,51 @@
 import 'dart:developer';
 
 import 'package:currency_converter/currency_codes.dart';
+import 'package:currency_converter/data/providers.dart';
+import 'package:currency_converter/screens/settings.dart';
 import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../services/country_from_location.dart';
 import '../services/currency_rate_api.dart';
 
-void main() {
-  runApp(const MainApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isDarkMode = prefs.getBool('darkModeEnabled') ?? false;
+  String currency = prefs.getString('favoriteCurrency') ?? "";
+  runApp(MainApp(isDarkMode: isDarkMode, currency: currency,));
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  final bool isDarkMode;
+  final String currency;
+  const MainApp({super.key, required this.isDarkMode, required this.currency});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: CurrencyConverter(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => DarkModeEnabledProvider(isDarkMode)),
+        ChangeNotifierProvider(create: (context) => FavoriteCurrencyProvider(currency)),
+      ],
+      child: Builder(
+        builder: (context) {
+          bool darkModeEnabled = context.watch<DarkModeEnabledProvider>().darkModeEnabled;
+          return MaterialApp(
+            theme: ThemeData(
+              brightness: Brightness.light,
+            ),
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+            ),
+            themeMode: darkModeEnabled ? ThemeMode.dark : ThemeMode.light,
+            home: CurrencyConverter(),
+          );
+        }
+      ),
     );
   }
 }
@@ -196,7 +224,11 @@ class CurrencyConverterState extends State<CurrencyConverter> {
               children: [
                 IconButton.filledTonal(
                   icon: const Icon(Icons.settings),
-                  onPressed: () {},
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => const SettingsPage()),
+                    );
+                  },
                   iconSize: 50,
                 ),
                 IconButton.filled(
