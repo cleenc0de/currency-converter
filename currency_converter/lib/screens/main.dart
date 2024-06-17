@@ -226,7 +226,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                   icon: const Icon(Icons.settings),
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const SettingsPage()),
+                      MaterialPageRoute(builder: (context) => const Settings()),
                     );
                   },
                   iconSize: 50,

@@ -3,8 +3,8 @@ import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class SettingsPage extends StatelessWidget {
-  const SettingsPage({super.key});
+class Settings extends StatelessWidget {
+  const Settings({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class SettingsPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(darkModeEnabled?"Light Mode":"Dark Mode", style: const TextStyle(fontSize: 20),),
-                IconButton(
+                IconButton.filledTonal(
                   iconSize: 20,
                   onPressed: () {
                     context.read<DarkModeEnabledProvider>().switchDarkModeEnabled();
