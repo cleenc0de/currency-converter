@@ -6,6 +6,7 @@ import 'package:currency_converter/screens/settings.dart';
 import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/country_from_location.dart';
@@ -226,8 +227,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                   icon: const Icon(Icons.settings),
                   onPressed: () {
                     Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => const Settings()),
-                    );
+                            MaterialWithModalsPageRoute(
+                                builder: (context) => const Settings()));
                   },
                   iconSize: 50,
                 ),
