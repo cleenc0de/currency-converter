@@ -7,6 +7,7 @@ import '../services/currency_rate_api.dart';
 import '../providers/currency_provider.dart';
 
 class CurrencyHistoryPanel extends StatefulWidget {
+  static const List<String> months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const CurrencyHistoryPanel({super.key});
 
   @override
@@ -40,7 +41,7 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
         _isLoading = false;
       });
     } catch (e) {
-      log('Error loading history: $e');
+      log('Error loading history: ${e}');
       setState(() {
         _isLoading = false;
       });
@@ -51,12 +52,12 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      height: 300,
+      height: 700,
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                const Text('Currency History',
+                const Text('Currency History per year',
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 Expanded(
@@ -65,7 +66,6 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
                       lineBarsData: [
                         LineChartBarData(
                           spots: _dataPoints,
-                          isCurved: true,
                           barWidth: 3,
                           color: Colors.blue,
                           belowBarData: BarAreaData(show: false),
@@ -73,15 +73,15 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
                         ),
                       ],
                       titlesData: const FlTitlesData(
-                        leftTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: true),
+                        rightTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
                         ),
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(showTitles: true),
+                        topTitles: AxisTitles(
+                          sideTitles: SideTitles(showTitles: false),
                         ),
                       ),
                       gridData: const FlGridData(show: true),
-                      borderData: FlBorderData(show: true),
+                      borderData: FlBorderData(show: false),
                     ),
                   ),
                 ),
