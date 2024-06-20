@@ -1,9 +1,12 @@
 import 'dart:developer';
 
 import 'package:currency_converter/currency_codes.dart';
+import 'package:currency_converter/screens/history_panel.dart';
 import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import '../providers/currency_provider.dart';
 import '../services/country_from_location.dart';
 import '../services/currency_rate_api.dart';
 
@@ -15,19 +18,18 @@ class CurrencyConverter extends StatefulWidget {
 }
 
 class CurrencyConverterState extends State<CurrencyConverter> {
-  String _selectedCurrencyFrom = getCurrencyCode(WidgetsBinding
-      .instance.platformDispatcher.locale.countryCode
-      .toString()); // current smartphone setting
-  String _selectedCurrencyTo = "EUR";
+  dynamic currencyProvider;
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
-  final CurrencyRateApi _currencyRateApi = CurrencyRateApi(); // Instance der API
+  final CurrencyRateApi _currencyRateApi =
+  CurrencyRateApi();
   bool _isConverting = false;
   bool _isLoading = false; // TODO: wait until current location is loading
 
   @override
   void initState() {
     super.initState();
+    currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
     _initializeCurrencyTo();
     _fromController.addListener(_onFromChanged);
     _toController.addListener(_onToChanged);
@@ -35,9 +37,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
 
   Future<void> _initializeCurrencyTo() async {
     String countryCode = await getCountryFromLocation();
-    setState(() {
-      _selectedCurrencyTo = getCurrencyCode(countryCode);
-    });
+    currencyProvider.setSelectedCurrencyTo(getCurrencyCode(countryCode));
   }
 
   void _onFromChanged() async {
@@ -46,11 +46,13 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     _isConverting = true;
     try {
       double fromValue = double.parse(_fromController.text);
-      double rate = await _currencyRateApi.getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
+      double rate = await _currencyRateApi.getExchangeRate(
+          currencyProvider.selectedCurrencyFrom,
+          currencyProvider.selectedCurrencyTo);
       double toValue = fromValue * rate;
       _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
     } catch (e) {
-      log('Error in _onFromChanged: $e');
+      log('\n Error in _onFromChanged: $e\n');
     } finally {
       _isConverting = false;
       _isLoading = false;
@@ -63,28 +65,14 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     _isConverting = true;
     try {
       double toValue = double.parse(_toController.text);
-      double rate = await _currencyRateApi.getExchangeRate(_selectedCurrencyTo, _selectedCurrencyFrom);
+      double rate = await _currencyRateApi.getExchangeRate(
+          currencyProvider.selectedCurrencyTo,
+          currencyProvider.selectedCurrencyFrom);
       double fromValue = toValue * rate;
-      _fromController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
+      _fromController.value =
+          TextEditingValue(text: fromValue.toStringAsFixed(2));
     } catch (e) {
       log('Error in _onToChanged: $e');
-    } finally {
-      _isConverting = false;
-      _isLoading = false;
-    }
-  }
-
-  void _onChanged() async{
-    if (_isConverting || _fromController.text.isEmpty) return;
-    _isLoading = true;
-    _isConverting = true;
-    try {
-      double fromValue = double.parse(_fromController.text);
-      double rate = await _currencyRateApi.getExchangeRate(_selectedCurrencyFrom, _selectedCurrencyTo);
-      double toValue = fromValue * rate;
-      _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
-    } catch (e) {
-      log('Error in _onFromChanged: $e');
     } finally {
       _isConverting = false;
       _isLoading = false;
@@ -114,13 +102,14 @@ class CurrencyConverterState extends State<CurrencyConverter> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "1 $_selectedCurrencyFrom corresponds",
+              "1 ${currencyProvider.selectedCurrencyFrom} corresponds",
               //TODO: don't hardcode exchange rate
               style: const TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 18),
             Text(
-              "1,09 $_selectedCurrencyTo", //TODO: don't hardcode exchange rate
+              "1,09 ${currencyProvider.selectedCurrencyTo}",
+              //TODO: don't hardcode exchange rate
               style: const TextStyle(fontSize: 28),
             ),
             const SizedBox(height: 32),
@@ -143,12 +132,12 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 CurrencyDropDownWidget(
                   onChanged: (value) {
                     setState(() {
-                      _selectedCurrencyFrom = value!;
+                      currencyProvider.setSelectedCurrencyFrom(value!);
                       _onFromChanged();
                     });
                   },
-                  initialValue: _selectedCurrencyFrom,
-                  disabledValue: _selectedCurrencyTo,
+                  initialValue: currencyProvider.selectedCurrencyFrom,
+                  disabledValue: currencyProvider.selectedCurrencyTo,
                 ),
               ],
             ),
@@ -169,12 +158,12 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 CurrencyDropDownWidget(
                   onChanged: (value) {
                     setState(() {
-                      _selectedCurrencyTo = value!;
-                      _onChanged();
+                      currencyProvider.setSelectedCurrencyTo(value!);
+                      _onFromChanged();
                     });
                   },
-                  initialValue: _selectedCurrencyTo,
-                  disabledValue: _selectedCurrencyFrom,
+                  initialValue: currencyProvider.selectedCurrencyTo,
+                  disabledValue: currencyProvider.selectedCurrencyFrom,
                 ),
               ],
             ),
@@ -196,7 +185,14 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 ),
                 IconButton.filled(
                   icon: const Icon(Icons.show_chart),
-                  onPressed: () {},
+                  onPressed: () {
+                    showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return CurrencyHistoryPanel();
+                        },
+                    );
+                  },
                   iconSize: 50,
                 ),
               ],
