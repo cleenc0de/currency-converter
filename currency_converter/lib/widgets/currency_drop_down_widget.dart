@@ -17,7 +17,7 @@ class CurrencyDropDownWidget extends StatefulWidget {
 }
 
 class CurrencyDropDownWidgetState extends State<CurrencyDropDownWidget> {
-  final List<String> _currencyCodes = ['USD', 'EUR', 'GBP', 'JPY', 'CNY'];
+  final List<String> _currencyCodes = ['current location', 'USD', 'EUR', 'GBP', 'JPY', 'CNY'];
   String? _selectedCurrency;
 
   @override

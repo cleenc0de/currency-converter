@@ -21,8 +21,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   dynamic currencyProvider;
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
-  final CurrencyRateApi _currencyRateApi =
-  CurrencyRateApi();
+  final CurrencyRateApi _currencyRateApi = CurrencyRateApi();
+  double _rate = 1.0;
   bool _isConverting = false;
   bool _isLoading = false; // TODO: wait until current location is loading
 
@@ -46,16 +46,19 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     _isConverting = true;
     try {
       double fromValue = double.parse(_fromController.text);
-      double rate = await _currencyRateApi.getExchangeRate(
+      _rate = await _currencyRateApi.getExchangeRate(
           currencyProvider.selectedCurrencyFrom,
           currencyProvider.selectedCurrencyTo);
-      double toValue = fromValue * rate;
+      double toValue = fromValue * _rate;
       _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
     } catch (e) {
       log('\n Error in _onFromChanged: $e\n');
     } finally {
-      _isConverting = false;
-      _isLoading = false;
+      setState(() {
+        _isConverting = false;
+        _isLoading = false;
+
+      });
     }
   }
 
@@ -65,17 +68,20 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     _isConverting = true;
     try {
       double toValue = double.parse(_toController.text);
-      double rate = await _currencyRateApi.getExchangeRate(
+      _rate = await _currencyRateApi.getExchangeRate(
           currencyProvider.selectedCurrencyTo,
           currencyProvider.selectedCurrencyFrom);
-      double fromValue = toValue * rate;
+      double fromValue = toValue * _rate;
       _fromController.value =
           TextEditingValue(text: fromValue.toStringAsFixed(2));
     } catch (e) {
       log('Error in _onToChanged: $e');
     } finally {
-      _isConverting = false;
-      _isLoading = false;
+      setState(() {
+        _isConverting = false;
+        _isLoading = false;
+
+      });
     }
   }
 
@@ -102,14 +108,12 @@ class CurrencyConverterState extends State<CurrencyConverter> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              "1 ${currencyProvider.selectedCurrencyFrom} corresponds",
-              //TODO: don't hardcode exchange rate
+              "1.0 ${currencyProvider.selectedCurrencyFrom} corresponds",
               style: const TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 18),
             Text(
-              "1,09 ${currencyProvider.selectedCurrencyTo}",
-              //TODO: don't hardcode exchange rate
+              "$_rate ${currencyProvider.selectedCurrencyTo}",
               style: const TextStyle(fontSize: 28),
             ),
             const SizedBox(height: 32),
@@ -187,10 +191,10 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                   icon: const Icon(Icons.show_chart),
                   onPressed: () {
                     showModalBottomSheet(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CurrencyHistoryPanel();
-                        },
+                      context: context,
+                      builder: (BuildContext context) {
+                        return CurrencyHistoryPanel();
+                      },
                     );
                   },
                   iconSize: 50,
