@@ -17,7 +17,7 @@ class Settings extends StatelessWidget {
           child: Wrap(
             children: <Widget>[
               const Text('Settings', style: TextStyle(fontSize: 32),),
-              const SizedBox(height: 50,),
+              const SizedBox(height: 75,),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

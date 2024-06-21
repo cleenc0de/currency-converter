@@ -229,6 +229,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                   onPressed: () {
                     showBarModalBottomSheet(
                       enableDrag: true,
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                       context: context,
                       builder: (context) => const Settings()
                     );
