@@ -127,6 +127,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
 
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.sizeOf(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -226,9 +227,11 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 IconButton.filledTonal(
                   icon: const Icon(Icons.settings),
                   onPressed: () {
-                    Navigator.of(context).push(
-                            MaterialWithModalsPageRoute(
-                                builder: (context) => const Settings()));
+                    showBarModalBottomSheet(
+                      enableDrag: true,
+                      context: context,
+                      builder: (context) => const Settings()
+                    );
                   },
                   iconSize: 50,
                 ),
