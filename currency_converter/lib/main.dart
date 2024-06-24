@@ -5,14 +5,18 @@ import 'package:provider/provider.dart';
 import '../screens/currency_converter_screen.dart';
 import 'currency_codes.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  String countryCode = await getCountryFromLocation();
+  String currencyTo = getCurrencyCode(countryCode);
+
   runApp(
     MultiProvider(providers: [
       ChangeNotifierProvider(
         create: (context) => CurrencyProvider(
             getCurrencyCode(WidgetsBinding
                 .instance.platformDispatcher.locale.countryCode
-                .toString()), "EUR"),
+                .toString()), "current location", currencyTo),
       ),
     ], child: const MainApp()),
   );

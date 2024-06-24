@@ -36,7 +36,6 @@ class CurrencyDropDownWidgetState extends State<CurrencyDropDownWidget> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return DropdownMenu<String>(
