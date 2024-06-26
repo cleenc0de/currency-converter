@@ -7,7 +7,7 @@ import '../services/currency_rate_api.dart';
 import '../providers/currency_provider.dart';
 
 class CurrencyHistoryPanel extends StatefulWidget {
-  static const List<String> months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  static const List<String> monthsNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const CurrencyHistoryPanel({super.key});
 
   @override
@@ -18,6 +18,7 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
   List<FlSpot> _dataPoints = [];
   bool _isLoading = true;
   final CurrencyRateApi _currencyRateApi = CurrencyRateApi();
+  List<int> months = [];
 
   @override
   void initState() {
@@ -25,13 +26,20 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
     _loadHistory();
   }
 
+  String _getMonth(int value) {
+    return CurrencyHistoryPanel.monthsNames[value-1];
+  }
+
   Future<void> _loadHistory() async {
     var currencyProvider =
         Provider.of<CurrencyProvider>(context, listen: false);
     try {
-      final rates = await _currencyRateApi.getHistory(
+      final historyData = await _currencyRateApi.getHistory(
           currencyProvider.selectedCurrencyFrom,
           currencyProvider.selectedCurrencyTo);
+      final rates = historyData['rates'] as List<String>;
+      months = historyData['months'] as List<int>;
+
       setState(() {
         _dataPoints = rates.asMap().entries.map((entry) {
           int index = entry.key;
@@ -41,7 +49,7 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
         _isLoading = false;
       });
     } catch (e) {
-      log('Error loading history: ${e}');
+      log('Error loading history: $e');
       setState(() {
         _isLoading = false;
       });
@@ -72,11 +80,24 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
                           dotData: const FlDotData(show: false),
                         ),
                       ],
-                      titlesData: const FlTitlesData(
-                        rightTitles: AxisTitles(
+                      titlesData: FlTitlesData(
+                        rightTitles: const AxisTitles(
                           sideTitles: SideTitles(showTitles: false),
                         ),
-                        topTitles: AxisTitles(
+
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                              interval: 4,
+                            getTitlesWidget: (value, meta) {
+                              int index = value.toInt();
+                              String monthStr = _getMonth(months[index]);
+                              return SideTitleWidget(axisSide: meta.axisSide, child: Text(monthStr));
+
+                            }
+                          )
+                        ),
+                        topTitles: const AxisTitles(
                           sideTitles: SideTitles(showTitles: false),
                         ),
                       ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
@@ -17,20 +18,27 @@ class CurrencyRateApi {
     }
   }
 
-  Future<List<String>> getHistory(String fromCurrency, String toCurrency) async {
+  Future<Map<String, dynamic>> getHistory(String fromCurrency, String toCurrency) async {
     DateTime now = DateTime.now();
     DateTime oneYearAgo = DateTime(now.year - 1, now.month, now.day);
-    final response = await http.get(Uri.parse(
-        '$_baseUrl/${DateFormat('yyyy-MM-dd').format(oneYearAgo)}..${DateFormat('yyyy-MM-dd').format(now)}?from=$fromCurrency&to=$toCurrency'));
+    Uri uri = Uri.parse(
+        '$_baseUrl/${DateFormat('yyyy-MM-dd').format(oneYearAgo)}..${DateFormat('yyyy-MM-dd').format(now)}?from=$fromCurrency&to=$toCurrency');
+    log("$uri");
+    final response = await http.get(uri);
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
       final List<String> rates = [];
+      final List<int> months = [];
 
       data['rates'].forEach((date, rate) {
         rates.add(rate[toCurrency].toString());
+        DateTime dateTime = DateTime.parse(date);
+        months.add(dateTime.month);
       });
 
-      return rates;
+      log("rates: $rates, months: $months");
+
+      return {'rates': rates, 'months': months};
     } else {
       throw Exception('Failed to load currency history');
     }
