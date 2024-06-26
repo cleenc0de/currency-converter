@@ -100,7 +100,6 @@ class CurrencyConverterState extends State<CurrencyConverter> {
 
   @override
   Widget build(BuildContext context) {
-    var size = MediaQuery.sizeOf(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -200,8 +199,10 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 IconButton.filled(
                   icon: const Icon(Icons.show_chart),
                   onPressed: () {
-                    showModalBottomSheet(
+                    showBarModalBottomSheet(
                       context: context,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
                       builder: (BuildContext context) {
                         return const CurrencyHistoryPanel();
                       },
