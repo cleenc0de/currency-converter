@@ -2,15 +2,17 @@ import 'package:currency_converter/providers/currency_provider.dart';
 import 'package:currency_converter/services/country_from_location.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/currency_converter_screen.dart';
 import 'currency_codes.dart';
+import 'providers/providers.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isDarkMode = prefs.getBool('darkModeEnabled') ?? false;
   String currency = prefs.getString('favoriteCurrency') ?? "";
-  runApp(MainApp(isDarkMode: isDarkMode, currency: currency,));
 
   String countryCode = await getCountryFromLocation();
   String currencyTo = getCurrencyCode(countryCode);
@@ -28,7 +30,7 @@ void main() async {
                     .instance.platformDispatcher.locale.countryCode
                     .toString()), "current location", currencyTo),
       ),
-    ], child: const MainApp()),
+    ], child: MainApp(isDarkMode: isDarkMode, currency: currency,)),
   );
 }
 
@@ -43,7 +45,7 @@ class MainApp extends StatelessWidget {
     bool darkModeEnabled = context
         .watch<DarkModeEnabledProvider>()
         .darkModeEnabled;
-    return const MaterialApp(
+    return MaterialApp(
       theme: ThemeData(
         brightness: Brightness.light,
       ),
@@ -51,11 +53,7 @@ class MainApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       themeMode: darkModeEnabled ? ThemeMode.dark : ThemeMode.light,
-      home: CurrencyConverter(),
+      home: const CurrencyConverter(),
     );
-
-    home:
-    CurrencyConverter();
-    )
   }
 }

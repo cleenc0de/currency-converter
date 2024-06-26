@@ -2,7 +2,7 @@
 import 'dart:developer';
 
 import 'package:currency_converter/currency_codes.dart';
-import 'package:currency_converter/data/providers.dart';
+import 'package:currency_converter/providers/providers.dart';
 import 'package:currency_converter/screens/settings.dart';
 import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
