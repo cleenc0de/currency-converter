@@ -23,7 +23,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   final CurrencyRateApi _currencyRateApi = CurrencyRateApi();
   double _rate = 1.0;
   bool _isConverting = false;
-  bool _isLoading = false; // TODO: wait until current location is loading
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -39,18 +39,15 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     _isConverting = true;
     try {
       double fromValue = double.parse(_fromController.text);
-      if (currencyProvider.actualCurrencyFrom ==
-          currencyProvider.actualCurrencyTo) {
-        _toController.value =
-            TextEditingValue(text: fromValue.toStringAsFixed(2));
+      if (currencyProvider.actualCurrencyFrom == currencyProvider.actualCurrencyTo) {
+        _toController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
       } else {
         _rate = await _currencyRateApi.getExchangeRate(
           currencyProvider.actualCurrencyFrom,
           currencyProvider.actualCurrencyTo,
         );
         double toValue = fromValue * _rate;
-        _toController.value =
-            TextEditingValue(text: toValue.toStringAsFixed(2));
+        _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
       }
     } catch (e) {
       log('\n Error in _onFromChanged: $e\n');
@@ -68,18 +65,15 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     _isConverting = true;
     try {
       double toValue = double.parse(_toController.text);
-      if (currencyProvider.actualCurrencyFrom ==
-          currencyProvider.actualCurrencyTo) {
-        _fromController.value =
-            TextEditingValue(text: toValue.toStringAsFixed(2));
+      if (currencyProvider.actualCurrencyFrom == currencyProvider.actualCurrencyTo) {
+        _fromController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
       } else {
         _rate = await _currencyRateApi.getExchangeRate(
           currencyProvider.actualCurrencyTo,
           currencyProvider.actualCurrencyFrom,
         );
         double fromValue = toValue * _rate;
-        _fromController.value =
-            TextEditingValue(text: fromValue.toStringAsFixed(2));
+        _fromController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
       }
     } catch (e) {
       log('Error in _onToChanged: $e');
@@ -140,7 +134,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 ),
                 const SizedBox(width: 10),
                 CurrencyDropDownWidget(
-                  onChanged: (value) {
+                  onChanged: (value) async {
                     setState(() {
                       currencyProvider.setSelectedCurrencyFrom(value!);
                       _onFromChanged();
@@ -189,8 +183,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                   onPressed: () {
                     showBarModalBottomSheet(
                         enableDrag: true,
-                        backgroundColor:
-                            Theme.of(context).scaffoldBackgroundColor,
+                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                         context: context,
                         builder: (context) => const Settings());
                   },
@@ -201,8 +194,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                   onPressed: () {
                     showBarModalBottomSheet(
                       context: context,
-                      backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                       builder: (BuildContext context) {
                         return const CurrencyHistoryPanel();
                       },
