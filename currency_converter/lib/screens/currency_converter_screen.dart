@@ -128,7 +128,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                     keyboardType: TextInputType.number,
                     textAlign: TextAlign.right,
                     inputFormatters: <TextInputFormatter>[
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?'))
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?')) //TODO: fix code
                     ],
                   ),
                 ),

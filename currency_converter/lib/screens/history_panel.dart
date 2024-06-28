@@ -61,8 +61,8 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
     }
     try {
       final historyData = await _currencyRateApi.getHistory(
-          currencyProvider.selectedCurrencyFrom,
-          currencyProvider.selectedCurrencyTo);
+          currencyProvider.actualCurrencyFrom,
+          currencyProvider.actualCurrencyTo);
       final rates = historyData['rates'] as List<String>;
       months = historyData['months'] as List<int>;
 
