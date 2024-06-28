@@ -32,16 +32,19 @@ class Settings extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 50,),
-              Row(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text("Favorite Currency", style: TextStyle(fontSize: 20),),
-                  CurrencyDropDownWidget(
-                    onChanged: (value) {
-                      context.read<FavoriteCurrencyProvider>().setFavoriteCurrency(value.toString());
-                    },
-                    initialValue: favoriteCurrency,
-                    disabledValue: "",
+                  const Text("Set a default currency to convert:", style: TextStyle(fontSize: 20),),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: CurrencyDropDownWidget(
+                      onChanged: (value) {
+                        context.read<FavoriteCurrencyProvider>().setFavoriteCurrency(value.toString());
+                      },
+                      initialValue: favoriteCurrency,
+                      disabledValue: "",
+                    ),
                   ),
                 ],
               ),
