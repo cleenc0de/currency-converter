@@ -60,7 +60,7 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      height: 700,
+      height: 500,
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : Column(
@@ -89,6 +89,7 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
                           sideTitles: SideTitles(
                             showTitles: true,
                               interval: 4,
+                              reservedSize: 30,
                             getTitlesWidget: (value, meta) {
                               int index = value.toInt();
                               String monthStr = _getMonth(months[index]);
