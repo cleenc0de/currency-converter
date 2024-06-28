@@ -35,6 +35,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
 
   void _onFromChanged() async {
     if (_isConverting) return;
+
     _isLoading = true;
     _isConverting = true;
     try {
