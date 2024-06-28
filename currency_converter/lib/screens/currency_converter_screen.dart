@@ -31,6 +31,26 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
     _fromController.addListener(_onFromChanged);
     _toController.addListener(_onToChanged);
+    _updateExchangeRate();
+  }
+
+  void _updateExchangeRate() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      _rate = await _currencyRateApi.getExchangeRate(
+        currencyProvider.actualCurrencyFrom,
+        currencyProvider.actualCurrencyTo,
+      );
+    } catch (e) {
+      log('Error in _updateExchangeRate: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _onFromChanged() async {
@@ -54,7 +74,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
         _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
       }
     } catch (e) {
-      log('\n Error in _onFromChanged: $e\n');
+      log('Error in _onFromChanged: $e');
     } finally {
       setState(() {
         _isConverting = false;
@@ -122,7 +142,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  "$_rate ${currencyProvider.actualCurrencyTo}",
+                  _isLoading ? "Loading..." : "$_rate ${currencyProvider.actualCurrencyTo}",
                   style: const TextStyle(fontSize: 28),
                 ),
                 const SizedBox(height: 32),
@@ -137,7 +157,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.right,
                         inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?')) //TODO: fix code
+                          FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?')) // TODO: fix code
                         ],
                       ),
                     ),
@@ -146,6 +166,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                       onChanged: (value) async {
                         setState(() {
                           currencyProvider.setSelectedCurrencyFrom(value!);
+                          _updateExchangeRate();
                           _onFromChanged();
                         });
                       },
@@ -172,6 +193,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                       onChanged: (value) {
                         setState(() {
                           currencyProvider.setSelectedCurrencyTo(value!);
+                          _updateExchangeRate();
                           _onFromChanged();
                         });
                       },
