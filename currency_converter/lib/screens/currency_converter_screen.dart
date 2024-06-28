@@ -36,8 +36,11 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   void _onFromChanged() async {
     if (_isConverting) return;
 
-    _isLoading = true;
-    _isConverting = true;
+    setState(() {
+      _isLoading = true;
+      _isConverting = true;
+    });
+
     try {
       double fromValue = double.parse(_fromController.text);
       if (currencyProvider.actualCurrencyFrom == currencyProvider.actualCurrencyTo) {
@@ -62,8 +65,12 @@ class CurrencyConverterState extends State<CurrencyConverter> {
 
   void _onToChanged() async {
     if (_isConverting) return;
-    _isLoading = true;
-    _isConverting = true;
+
+    setState(() {
+      _isLoading = true;
+      _isConverting = true;
+    });
+
     try {
       double toValue = double.parse(_toController.text);
       if (currencyProvider.actualCurrencyFrom == currencyProvider.actualCurrencyTo) {
@@ -102,92 +109,97 @@ class CurrencyConverterState extends State<CurrencyConverter> {
           style: TextStyle(fontSize: 32),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                "1.0 ${currencyProvider.actualCurrencyFrom} corresponds",
-                style: const TextStyle(fontSize: 20),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                "$_rate ${currencyProvider.actualCurrencyTo}",
-                style: const TextStyle(fontSize: 28),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _fromController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(32.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  "1.0 ${currencyProvider.actualCurrencyFrom} corresponds",
+                  style: const TextStyle(fontSize: 20),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  "$_rate ${currencyProvider.actualCurrencyTo}",
+                  style: const TextStyle(fontSize: 28),
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _fromController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.right,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?')) //TODO: fix code
+                        ],
                       ),
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.right,
-                      inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?')) //TODO: fix code
-                      ],
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  CurrencyDropDownWidget(
-                    onChanged: (value) async {
-                      setState(() {
-                        currencyProvider.setSelectedCurrencyFrom(value!);
-                        _onFromChanged();
-                      });
-                    },
-                    initialValue: currencyProvider.selectedCurrencyFrom,
-                    disabledValue: currencyProvider.selectedCurrencyTo,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 25),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _toController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                    const SizedBox(width: 10),
+                    CurrencyDropDownWidget(
+                      onChanged: (value) async {
+                        setState(() {
+                          currencyProvider.setSelectedCurrencyFrom(value!);
+                          _onFromChanged();
+                        });
+                      },
+                      initialValue: currencyProvider.selectedCurrencyFrom,
+                      disabledValue: currencyProvider.selectedCurrencyTo,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _toController,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.right,
                       ),
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.right,
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  CurrencyDropDownWidget(
-                    onChanged: (value) {
-                      setState(() {
-                        currencyProvider.setSelectedCurrencyTo(value!);
-                        _onFromChanged();
-                      });
-                    },
-                    initialValue: currencyProvider.selectedCurrencyTo,
-                    disabledValue: currencyProvider.selectedCurrencyFrom,
-                  ),
-                ],
-              ),
-              const Align(
-                alignment: Alignment.bottomRight,
-              ),
-              const Spacer(),
-              Row(
+                    const SizedBox(width: 10),
+                    CurrencyDropDownWidget(
+                      onChanged: (value) {
+                        setState(() {
+                          currencyProvider.setSelectedCurrencyTo(value!);
+                          _onFromChanged();
+                        });
+                      },
+                      initialValue: currencyProvider.selectedCurrencyTo,
+                      disabledValue: currencyProvider.selectedCurrencyFrom,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 100), // Space for the IconButtons
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton.filledTonal(
                     icon: const Icon(Icons.settings),
                     onPressed: () {
                       showBarModalBottomSheet(
-                          enableDrag: true,
-                          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                          context: context,
-                          builder: (context) => const Settings());
+                        enableDrag: true,
+                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                        context: context,
+                        builder: (context) => const Settings(),
+                      );
                     },
                     iconSize: 50,
                   ),
@@ -206,9 +218,9 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                   ),
                 ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
