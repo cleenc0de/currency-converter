@@ -85,10 +85,17 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
                           sideTitles: SideTitles(showTitles: false),
                         ),
 
+                        leftTitles: const AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 45,
+                          )
+                        ),
+
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
-                              interval: 4,
+                              interval: 4.42,
                               reservedSize: 30,
                             getTitlesWidget: (value, meta) {
                               int index = value.toInt();
