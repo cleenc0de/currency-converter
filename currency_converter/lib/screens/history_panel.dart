@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +18,7 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
   bool _isLoading = true;
   final CurrencyRateApi _currencyRateApi = CurrencyRateApi();
   List<int> months = [];
+  String _errorMessage = "";
 
   @override
   void initState() {
@@ -32,7 +32,17 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
 
   Future<void> _loadHistory() async {
     var currencyProvider =
-        Provider.of<CurrencyProvider>(context, listen: false);
+    Provider.of<CurrencyProvider>(context, listen: false);
+    setState(() {
+      _errorMessage = "";
+    });
+    if (currencyProvider.actualCurrencyFrom == currencyProvider.actualCurrencyTo) {
+      setState(() {
+        _errorMessage = "Choose two different locations";
+        _isLoading = false;
+      });
+      return;
+    }
     try {
       final historyData = await _currencyRateApi.getHistory(
           currencyProvider.selectedCurrencyFrom,
@@ -63,58 +73,63 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
       height: 500,
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
+          : _errorMessage.isNotEmpty
+          ? Center(
+        child: Text(
+          _errorMessage,
+          style: const TextStyle(color: Colors.red, fontSize: 16),
+        ),
+      )
           : Column(
-              children: [
-                const Text('Currency History per year',
-                    style:
-                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                Expanded(
-                  child: LineChart(
-                    LineChartData(
-                      lineBarsData: [
-                        LineChartBarData(
-                          spots: _dataPoints,
-                          barWidth: 3,
-                          color: Colors.blue,
-                          belowBarData: BarAreaData(show: false),
-                          dotData: const FlDotData(show: false),
-                        ),
-                      ],
-                      titlesData: FlTitlesData(
-                        rightTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-
-                        leftTitles: const AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                            reservedSize: 45,
-                          )
-                        ),
-
-                        bottomTitles: AxisTitles(
-                          sideTitles: SideTitles(
-                            showTitles: true,
-                              interval: 4.42, // 53 (digits) : 12 (month / year)
-                              reservedSize: 30,
-                            getTitlesWidget: (value, meta) {
-                              int index = value.toInt();
-                              String monthStr = _getMonth(months[index]);
-                              return SideTitleWidget(axisSide: meta.axisSide, child: Text(monthStr));
-                            }
-                          )
-                        ),
-                        topTitles: const AxisTitles(
-                          sideTitles: SideTitles(showTitles: false),
-                        ),
-                      ),
-                      gridData: const FlGridData(show: true),
-                      borderData: FlBorderData(show: false),
+        children: [
+          const Text('Currency History per year',
+              style:
+              TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          Expanded(
+            child: LineChart(
+              LineChartData(
+                lineBarsData: [
+                  LineChartBarData(
+                    spots: _dataPoints,
+                    barWidth: 3,
+                    color: Colors.blue,
+                    belowBarData: BarAreaData(show: false),
+                    dotData: const FlDotData(show: false),
+                  ),
+                ],
+                titlesData: FlTitlesData(
+                  rightTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  leftTitles: const AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 45,
                     ),
                   ),
+                  bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                          showTitles: true,
+                          interval: 4.42, // 53 (digits) : 12 (month / year)
+                          reservedSize: 30,
+                          getTitlesWidget: (value, meta) {
+                            int index = value.toInt();
+                            String monthStr = _getMonth(months[index]);
+                            return SideTitleWidget(axisSide: meta.axisSide, child: Text(monthStr));
+                          }
+                      )
+                  ),
+                  topTitles: const AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
                 ),
-              ],
+                gridData: const FlGridData(show: true),
+                borderData: FlBorderData(show: false),
+              ),
             ),
+          ),
+        ],
+      ),
     );
   }
 }
