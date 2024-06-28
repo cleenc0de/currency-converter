@@ -95,13 +95,12 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
                         bottomTitles: AxisTitles(
                           sideTitles: SideTitles(
                             showTitles: true,
-                              interval: 4.42,
+                              interval: 4.42, // 53 (digits) : 12 (month / year)
                               reservedSize: 30,
                             getTitlesWidget: (value, meta) {
                               int index = value.toInt();
                               String monthStr = _getMonth(months[index]);
                               return SideTitleWidget(axisSide: meta.axisSide, child: Text(monthStr));
-
                             }
                           )
                         ),
