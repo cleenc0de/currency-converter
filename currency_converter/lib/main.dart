@@ -1,11 +1,12 @@
 import 'package:currency_converter/providers/currency_provider.dart';
+import 'package:currency_converter/providers/dark_mode_enabled_provider.dart';
+import 'package:currency_converter/providers/favorite_currency_provider.dart';
 import 'package:currency_converter/services/country_from_location.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../screens/currency_converter_screen.dart';
 import 'currency_codes.dart';
-import 'providers/providers.dart';
 
 
 void main() async {
@@ -26,9 +27,9 @@ void main() async {
       ChangeNotifierProvider(
         create: (context) =>
             CurrencyProvider(
-                getCurrencyCode(WidgetsBinding
+                currency.isEmpty?getCurrencyCode(WidgetsBinding
                     .instance.platformDispatcher.locale.countryCode
-                    .toString()), "current location", currencyTo),
+                    .toString()):currency, "current location", currencyTo),
       ),
     ], child: MainApp(isDarkMode: isDarkMode, currency: currency,)),
   );

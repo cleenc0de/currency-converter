@@ -1,4 +1,5 @@
-import 'package:currency_converter/providers/providers.dart';
+import 'package:currency_converter/providers/dark_mode_enabled_provider.dart';
+import 'package:currency_converter/providers/favorite_currency_provider.dart';
 import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +44,7 @@ class Settings extends StatelessWidget {
                         context.read<FavoriteCurrencyProvider>().setFavoriteCurrency(value.toString());
                       },
                       initialValue: favoriteCurrency,
-                      disabledValue: "",
+                      disabledValue: "current location",
                     ),
                   ),
                 ],
