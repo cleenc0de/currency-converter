@@ -1,7 +1,9 @@
 import 'package:currency_converter/providers/currency_provider.dart';
+import 'package:currency_converter/providers/currency_rate_api_provider.dart';
 import 'package:currency_converter/providers/dark_mode_enabled_provider.dart';
 import 'package:currency_converter/providers/favorite_currency_provider.dart';
 import 'package:currency_converter/services/country_from_location.dart';
+import 'package:currency_converter/services/currency_rate_api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -31,15 +33,13 @@ void main() async {
                     .instance.platformDispatcher.locale.countryCode
                     .toString()):currency, "current location", currencyTo),
       ),
-    ], child: MainApp(isDarkMode: isDarkMode, currency: currency,)),
+      Provider(create: (context) => CurrencyRateApiProvider(CurrencyRateApiImpl())),
+    ], child: const MainApp()),
   );
 }
 
 class MainApp extends StatelessWidget {
-  const MainApp({super.key, required this.isDarkMode, required this.currency});
-
-  final bool isDarkMode;
-  final String currency;
+  const MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {

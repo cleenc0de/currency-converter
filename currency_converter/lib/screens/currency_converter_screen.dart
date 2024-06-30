@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:currency_converter/providers/currency_rate_api_provider.dart';
 import 'package:currency_converter/screens/history_panel.dart';
 import 'package:currency_converter/screens/settings.dart';
 import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
@@ -20,7 +21,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   late CurrencyProvider currencyProvider;
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
-  final CurrencyRateApi _currencyRateApi = CurrencyRateApi();
+  late CurrencyRateApi _currencyRateApi;
   double _rate = 1.0;
   bool _isConverting = false;
   bool _isLoading = false;
@@ -29,6 +30,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   void initState() {
     super.initState();
     currencyProvider = Provider.of<CurrencyProvider>(context, listen: false);
+    _currencyRateApi = Provider.of<CurrencyRateApiProvider>(context, listen: false).api;
     _fromController.addListener(_onFromChanged);
     _toController.addListener(_onToChanged);
     _updateExchangeRate();

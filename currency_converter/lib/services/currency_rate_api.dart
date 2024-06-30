@@ -3,9 +3,15 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
-class CurrencyRateApi {
+abstract class CurrencyRateApi {
+  Future<double> getExchangeRate(String fromCurrency, String toCurrency);
+  Future<Map<String, dynamic>> getHistory(String fromCurrency, String toCurrency);
+}
+
+class CurrencyRateApiImpl extends CurrencyRateApi {
   static const String _baseUrl = 'https://api.frankfurter.app';
 
+  @override
   Future<double> getExchangeRate(String fromCurrency, String toCurrency) async {
     final response = await http
         .get(Uri.parse('$_baseUrl/latest?from=$fromCurrency&to=$toCurrency'));
@@ -18,6 +24,7 @@ class CurrencyRateApi {
     }
   }
 
+  @override
   Future<Map<String, dynamic>> getHistory(String fromCurrency, String toCurrency) async {
     DateTime now = DateTime.now();
     DateTime oneYearAgo = DateTime(now.year - 1, now.month, now.day);

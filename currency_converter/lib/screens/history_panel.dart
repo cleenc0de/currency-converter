@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:currency_converter/providers/currency_rate_api_provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,13 +31,14 @@ class CurrencyHistoryPanel extends StatefulWidget {
 class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
   List<FlSpot> _dataPoints = [];
   bool _isLoading = true;
-  final CurrencyRateApi _currencyRateApi = CurrencyRateApi();
+  late CurrencyRateApi _currencyRateApi;
   List<int> months = [];
   String _errorMessage = "";
 
   @override
   void initState() {
     super.initState();
+    _currencyRateApi = Provider.of<CurrencyRateApiProvider>(context, listen: false).api;
     _loadHistory();
   }
 
