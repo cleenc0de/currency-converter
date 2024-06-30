@@ -17,7 +17,7 @@ class CurrencyConverter extends StatefulWidget {
 }
 
 class CurrencyConverterState extends State<CurrencyConverter> {
-  dynamic currencyProvider;
+  late CurrencyProvider currencyProvider;
   final TextEditingController _fromController = TextEditingController();
   final TextEditingController _toController = TextEditingController();
   final CurrencyRateApi _currencyRateApi = CurrencyRateApi();
@@ -38,7 +38,6 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     setState(() {
       _isLoading = true;
     });
-
     try {
       _rate = await _currencyRateApi.getExchangeRate(
         currencyProvider.actualCurrencyFrom,
@@ -53,64 +52,49 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     }
   }
 
-  void _onFromChanged() async {
+  void _onFromChanged() {
     if (_isConverting) return;
 
     setState(() {
-      _isLoading = true;
       _isConverting = true;
     });
 
-    try {
-      double fromValue = double.parse(_fromController.text);
-      if (currencyProvider.actualCurrencyFrom == currencyProvider.actualCurrencyTo) {
-        _toController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
-      } else {
-        _rate = await _currencyRateApi.getExchangeRate(
-          currencyProvider.actualCurrencyFrom,
-          currencyProvider.actualCurrencyTo,
-        );
-        double toValue = fromValue * _rate;
-        _toController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
-      }
-    } catch (e) {
-      log('Error in _onFromChanged: $e');
-    } finally {
-      setState(() {
-        _isConverting = false;
-        _isLoading = false;
-      });
+    double fromValue = double.tryParse(_fromController.text) ?? 0.0;
+    if (currencyProvider.actualCurrencyFrom ==
+        currencyProvider.actualCurrencyTo) {
+      _toController.value =
+          TextEditingValue(text: fromValue.toStringAsFixed(4));
+    } else {
+      double toValue = fromValue * _rate;
+      _toController.value = TextEditingValue(text: toValue.toStringAsFixed(4));
     }
+
+    setState(() {
+      _isConverting = false;
+    });
   }
 
-  void _onToChanged() async {
+  void _onToChanged() {
     if (_isConverting) return;
 
     setState(() {
-      _isLoading = true;
       _isConverting = true;
     });
 
-    try {
-      double toValue = double.parse(_toController.text);
-      if (currencyProvider.actualCurrencyFrom == currencyProvider.actualCurrencyTo) {
-        _fromController.value = TextEditingValue(text: toValue.toStringAsFixed(2));
-      } else {
-        _rate = await _currencyRateApi.getExchangeRate(
-          currencyProvider.actualCurrencyTo,
-          currencyProvider.actualCurrencyFrom,
-        );
-        double fromValue = toValue * _rate;
-        _fromController.value = TextEditingValue(text: fromValue.toStringAsFixed(2));
-      }
-    } catch (e) {
-      log('Error in _onToChanged: $e');
-    } finally {
-      setState(() {
-        _isConverting = false;
-        _isLoading = false;
-      });
+    double toValue = double.tryParse(_toController.text) ?? 0.0;
+    if (currencyProvider.actualCurrencyFrom ==
+        currencyProvider.actualCurrencyTo) {
+      _fromController.value =
+          TextEditingValue(text: toValue.toStringAsFixed(4));
+    } else {
+      double fromValue = toValue / _rate;
+      _fromController.value =
+          TextEditingValue(text: fromValue.toStringAsFixed(4));
     }
+
+    setState(() {
+      _isConverting = false;
+    });
   }
 
   @override
@@ -142,7 +126,9 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  _isLoading ? "Loading..." : "$_rate ${currencyProvider.actualCurrencyTo}",
+                  _isLoading
+                      ? "Loading..."
+                      : "$_rate ${currencyProvider.actualCurrencyTo}",
                   style: const TextStyle(fontSize: 28),
                 ),
                 const SizedBox(height: 32),
@@ -157,7 +143,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.right,
                         inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(RegExp(r'^\d+(.)*\d?')) // TODO: fix code
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d*\.?\d{0,4}'))
                         ],
                       ),
                     ),
@@ -166,9 +153,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                       onChanged: (value) async {
                         setState(() {
                           currencyProvider.setSelectedCurrencyFrom(value!);
-                          _updateExchangeRate();
-                          _onFromChanged();
                         });
+                        _updateExchangeRate();
                       },
                       initialValue: currencyProvider.selectedCurrencyFrom,
                       disabledValue: currencyProvider.selectedCurrencyTo,
@@ -186,6 +172,10 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                         ),
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.right,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^\d*\.?\d{0,4}'))
+                        ],
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -193,9 +183,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                       onChanged: (value) {
                         setState(() {
                           currencyProvider.setSelectedCurrencyTo(value!);
-                          _updateExchangeRate();
-                          _onFromChanged();
                         });
+                        _updateExchangeRate();
                       },
                       initialValue: currencyProvider.selectedCurrencyTo,
                       disabledValue: currencyProvider.selectedCurrencyFrom,
@@ -218,7 +207,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                     onPressed: () {
                       showBarModalBottomSheet(
                         enableDrag: true,
-                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
                         context: context,
                         builder: (context) => const Settings(),
                       );
@@ -230,7 +220,8 @@ class CurrencyConverterState extends State<CurrencyConverter> {
                     onPressed: () {
                       showBarModalBottomSheet(
                         context: context,
-                        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                        backgroundColor:
+                            Theme.of(context).scaffoldBackgroundColor,
                         builder: (BuildContext context) {
                           return const CurrencyHistoryPanel();
                         },
