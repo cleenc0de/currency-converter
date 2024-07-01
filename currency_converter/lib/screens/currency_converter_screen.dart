@@ -45,6 +45,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
         currencyProvider.actualCurrencyFrom,
         currencyProvider.actualCurrencyTo,
       );
+      _onFromChanged();
     } catch (e) {
       log('Error in _updateExchangeRate: $e');
     } finally {
