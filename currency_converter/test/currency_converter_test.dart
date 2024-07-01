@@ -4,6 +4,7 @@ import 'package:currency_converter/providers/currency_provider.dart';
 import 'package:currency_converter/providers/currency_rate_api_provider.dart';
 import 'package:currency_converter/screens/currency_converter_screen.dart';
 import 'package:currency_converter/services/currency_rate_api.dart';
+import 'package:currency_converter/widgets/currency_drop_down_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -72,20 +73,27 @@ void main() {
 
     // Change currency and verify updated exchange rate
 
-    await tester.tap(find.byType(DropdownMenu<String>).first);
+    await tester.tap(find.byType(CurrencyDropDownWidget).first);
     await tester.pumpAndSettle();
     final jpyEntry = find.text('JPY').last;
     await tester.ensureVisible(jpyEntry);
+    await tester.dragUntilVisible(
+      jpyEntry, // what you want to find
+      find.byType(SingleChildScrollView), // widget you want to scroll
+      const Offset(0, -50), // delta to move
+    );
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwe.png'));
     await tester.tap(jpyEntry);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(DropdownMenu<String>).last);
+    await tester.tap(find.byType(CurrencyDropDownWidget).last);
     await tester.pumpAndSettle();
+    
     final krwEntry = find.text('KRW').last;
     await tester.tap(krwEntry);
     await tester.pumpAndSettle();
 
-    await expectLater(find.byType(CurrencyConverter), matchesGoldenFile('qwe.png'));
+    //await expectLater(find.byType(CurrencyConverter), matchesGoldenFile('qwe.png'));
 
     expect(find.text('1.0 JPY corresponds'), findsOneWidget);
     expect(find.text('8.5778 KRW'), findsOneWidget);
