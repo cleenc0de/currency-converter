@@ -41,10 +41,10 @@ class CurrencyConverterState extends State<CurrencyConverter> {
       _isLoading = true;
     });
     try {
-      _rate = await _currencyRateApi.getExchangeRate(
+      _rate = currencyProvider.actualCurrencyFrom != currencyProvider.actualCurrencyTo?await _currencyRateApi.getExchangeRate(
         currencyProvider.actualCurrencyFrom,
         currencyProvider.actualCurrencyTo,
-      );
+      ):1.0;
       _onFromChanged();
     } catch (e) {
       log('Error in _updateExchangeRate: $e');
