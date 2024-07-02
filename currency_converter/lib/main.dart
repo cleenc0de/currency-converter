@@ -47,6 +47,7 @@ class MainApp extends StatelessWidget {
         .watch<DarkModeEnabledProvider>()
         .darkModeEnabled;
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
       ),

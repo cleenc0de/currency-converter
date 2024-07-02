@@ -63,7 +63,6 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     }
   }
 
-
   void _onFromChanged() {
     if (_isConverting || _fromController.text.isEmpty) return;
 
