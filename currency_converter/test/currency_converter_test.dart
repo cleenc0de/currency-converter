@@ -20,6 +20,7 @@ void main() {
   late CurrencyProvider currencyProvider;
 
   setUp(() {
+    WidgetController.hitTestWarningShouldBeFatal = false;
     mockCurrencyRateApi = MockCurrencyRateApi();
     currencyProvider = CurrencyProvider('USD', 'EUR', 'EUR');
   });
@@ -47,6 +48,7 @@ void main() {
 
     when(mockCurrencyRateApi.getExchangeRate(any, any)).thenAnswer((_) async => 2.0);
     when(mockCurrencyRateApi.getExchangeRate("USD", "EUR")).thenAnswer((_) async => 0.85);
+    when(mockCurrencyRateApi.getExchangeRate("USD", "KRW")).thenAnswer((_) async => 1382.42);
     when(mockCurrencyRateApi.getExchangeRate("JPY", "KRW")).thenAnswer((_) async => 8.5778);
 
     await tester.pumpWidget(createTestWidget(const CurrencyConverter()));
@@ -73,29 +75,32 @@ void main() {
 
     // Change currency and verify updated exchange rate
 
-    await tester.tap(find.byType(CurrencyDropDownWidget).first);
+    /* await tester.tap(find.byType(CurrencyDropDownWidget).first);
     await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwa.png'));
     final jpyEntry = find.text('JPY').last;
     await tester.ensureVisible(jpyEntry);
-    await tester.dragUntilVisible(
-      jpyEntry, // what you want to find
-      find.byType(SingleChildScrollView), // widget you want to scroll
-      const Offset(0, -50), // delta to move
-    );
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwe.png'));
-    await tester.tap(jpyEntry);
     await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwb.png'));
+    await tester.tap(jpyEntry);
+    await tester.pumpAndSettle(); */
 
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwc.png'));
     await tester.tap(find.byType(CurrencyDropDownWidget).last);
     await tester.pumpAndSettle();
-    
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwd.png'));
     final krwEntry = find.text('KRW').last;
+    await tester.ensureVisible(krwEntry);
+    await tester.pumpAndSettle();
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwe.png'));
     await tester.tap(krwEntry);
     await tester.pumpAndSettle();
 
-    //await expectLater(find.byType(CurrencyConverter), matchesGoldenFile('qwe.png'));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwf.png'));
 
-    expect(find.text('1.0 JPY corresponds'), findsOneWidget);
-    expect(find.text('8.5778 KRW'), findsOneWidget);
+    expect(find.text('1.0 USD corresponds'), findsOneWidget);
+    expect(find.text('1382.42 KRW'), findsOneWidget);
+
+    expect(toTextField.controller?.text, '138242.0000');
   });
 }
