@@ -73,30 +73,18 @@ void main() {
     TextField toTextField = tester.widget(find.byType(TextField).at(2));
     expect(toTextField.controller?.text, '85.0000');
 
-    // Change currency and verify updated exchange rate
-
-    /* await tester.tap(find.byType(CurrencyDropDownWidget).first);
-    await tester.pumpAndSettle();
     await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwa.png'));
-    final jpyEntry = find.text('JPY').last;
-    await tester.ensureVisible(jpyEntry);
-    await tester.pumpAndSettle();
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwb.png'));
-    await tester.tap(jpyEntry);
-    await tester.pumpAndSettle(); */
-
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwc.png'));
     await tester.tap(find.byType(CurrencyDropDownWidget).last);
     await tester.pumpAndSettle();
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwd.png'));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwb.png'));
     final krwEntry = find.text('KRW').last;
     await tester.ensureVisible(krwEntry);
     await tester.pumpAndSettle();
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwe.png'));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwc.png'));
     await tester.tap(krwEntry);
     await tester.pumpAndSettle();
 
-    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwf.png'));
+    await expectLater(find.byType(MaterialApp), matchesGoldenFile('qwd.png'));
 
     expect(find.text('1.0 USD corresponds'), findsOneWidget);
     expect(find.text('1382.42 KRW'), findsOneWidget);
