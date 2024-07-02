@@ -56,7 +56,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   }
 
   void _onFromChanged() {
-    if (_isConverting) return;
+    if (_isConverting || _fromController.text.isEmpty) return;
 
     setState(() {
       _isConverting = true;
@@ -66,10 +66,10 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     if (currencyProvider.actualCurrencyFrom ==
         currencyProvider.actualCurrencyTo) {
       _toController.value =
-          TextEditingValue(text: fromValue.toStringAsFixed(4));
+          TextEditingValue(text: fromValue.toString());
     } else {
       double toValue = fromValue * _rate;
-      _toController.value = TextEditingValue(text: toValue.toStringAsFixed(4));
+      _toController.value = TextEditingValue(text: toValue.toString());
     }
 
     setState(() {
@@ -78,7 +78,7 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   }
 
   void _onToChanged() {
-    if (_isConverting) return;
+    if (_isConverting || _toController.text.isEmpty) return;
 
     setState(() {
       _isConverting = true;
@@ -88,11 +88,11 @@ class CurrencyConverterState extends State<CurrencyConverter> {
     if (currencyProvider.actualCurrencyFrom ==
         currencyProvider.actualCurrencyTo) {
       _fromController.value =
-          TextEditingValue(text: toValue.toStringAsFixed(4));
+          TextEditingValue(text: toValue.toString());
     } else {
       double fromValue = toValue / _rate;
       _fromController.value =
-          TextEditingValue(text: fromValue.toStringAsFixed(4));
+          TextEditingValue(text: fromValue.toString());
     }
 
     setState(() {
