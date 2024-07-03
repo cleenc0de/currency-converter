@@ -30,7 +30,6 @@ class CurrencyRateApiImpl extends CurrencyRateApi {
     DateTime oneYearAgo = DateTime(now.year - 1, now.month, now.day);
     Uri uri = Uri.parse(
         '$_baseUrl/${DateFormat('yyyy-MM-dd').format(oneYearAgo)}..${DateFormat('yyyy-MM-dd').format(now)}?from=$fromCurrency&to=$toCurrency');
-    log("$uri");
     final response = await http.get(uri);
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(response.body);
@@ -42,9 +41,6 @@ class CurrencyRateApiImpl extends CurrencyRateApi {
         DateTime dateTime = DateTime.parse(date);
         months.add(dateTime.month);
       });
-
-      log("rates: $rates, months: $months");
-
       return {'rates': rates, 'months': months};
     } else {
       throw Exception('Failed to load currency history');

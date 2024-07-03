@@ -56,7 +56,6 @@ class CurrencyConverterState extends State<CurrencyConverter> {
   }
 
   String truncateString(num input, int maxLength) {
-    log('$input');
     if (input.toString().replaceAll('.', '').length <= maxLength) {
       return input.toString();
     } else {

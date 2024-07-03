@@ -124,8 +124,7 @@ class CurrencyHistoryPanelState extends State<CurrencyHistoryPanel> {
                             ),
                             leftTitles: const AxisTitles(
                               sideTitles: SideTitles(
-                                showTitles: true,
-                                reservedSize: 45,
+                                showTitles: false,
                               ),
                             ),
                             bottomTitles: AxisTitles(
