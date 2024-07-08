@@ -17,7 +17,41 @@ class CurrencyDropDownWidget extends StatefulWidget {
 }
 
 class CurrencyDropDownWidgetState extends State<CurrencyDropDownWidget> {
-  final List<String> _currencyCodes = ['USD', 'EUR', 'GBP', 'JPY', 'CNY'];
+  final List<String> _currencyCodes = [
+    'current location',
+    'AUD',
+    'BGN',
+    'BRL',
+    'CAD',
+    'CHF',
+    'CNY',
+    'CZK',
+    'DKK',
+    'EUR',
+    'GBP',
+    'HKD',
+    'HUF',
+    'IDR',
+    'ILS',
+    'INR',
+    'ISK',
+    'JPY',
+    'KRW',
+    'MXN',
+    'MYR',
+    'NOK',
+    'NZD',
+    'PHP',
+    'PLN',
+    'RON',
+    'SEK',
+    'SGD',
+    'THB',
+    'TRY',
+    'USD',
+    'ZAR'
+  ];
+
   String? _selectedCurrency;
 
   @override
@@ -35,7 +69,6 @@ class CurrencyDropDownWidgetState extends State<CurrencyDropDownWidget> {
       });
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
